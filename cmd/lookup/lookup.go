@@ -10,6 +10,7 @@ import (
 )
 
 var db *sql.DB
+var stmt *sql.Stmt
 var err error
 
 func InitDB(dataSourceName string) {
@@ -17,15 +18,15 @@ func InitDB(dataSourceName string) {
     if err != nil {
         log.Panic(err)
     }
+	stmt, err = db.Prepare(`select * from urls where url = ?`)
 }
 
 func UrlInfo(ctx *fasthttp.RequestCtx) {
 	ctx.SetContentType("application/json")
-	sqlStatement := `select * from urls where url = $url`
 	var url string
 	var threat string
 	var dateadded string
-	row := db.QueryRow(sqlStatement, ctx.UserValue("url"))
+	row := stmt.QueryRow(ctx.UserValue("url"))
 	switch err = row.Scan(&url, &threat, &dateadded); err {
 	case sql.ErrNoRows:
 		fmt.Fprintf(ctx, "{\"results\": [{}]}")
@@ -48,4 +49,6 @@ func main() {
 	r := router.New()
 	r.GET("/urlinfo/1/*url", UrlInfo)
 	log.Fatal(fasthttp.ListenAndServe(":8080", r.Handler))
+	stmt.Close()
+	db.Close()
 }
