@@ -11,7 +11,7 @@ import (
 
 func UrlInfo(ctx *fasthttp.RequestCtx) {
 	ctx.SetContentType("application/json")
-	db, err := sql.Open("sqlite3", "/home/brad/rqlited/db.sqlite")
+	db, err := sql.Open("sqlite3", "~/rqlited/db.sqlite")
     if err != nil {
         log.Fatal(err)
     }
