@@ -35,3 +35,23 @@ I picked up [rqlite](https://github.com/rqlite/rqlite) and put it to work. The l
 Each worker container seems to be able to do 16k req/s on the test machine. We can activate as many (N) worker containers as we need to service the requests. We can load balance the workers behind a proxy until we reach the proxy's req/s ceiling. Then we can scale out to M leader containers and proxy containers, each with N number of worker containers
 #### What are some strategies you might use to update the service with new URLs?
 The rqlite API provides everything we need to accomplish this, including updating the worker containers as new data comes in. We can insert 5000 new rows in about 0.8s on the test machine.
+# How to build?
+Start a fresh rqlite instance
+```bash
+rqlited -on-disk ~/rqlited &
+```
+Run import to get data from urlhaus
+```bash
+go run cmd/import/import.go
+```
+Start the server
+```bash
+go run cmd/lookup/lookup.go
+```
+In a web browser visit
+
+http://localhost:8080/urlinfo/1/111.43.223.158:52727/Mozi.m
+
+http://localhost:8080/urlinfo/1/Safe
+
+The API is designed to be similar to rqlite API.
