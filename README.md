@@ -30,8 +30,8 @@ thousand URLs a day with updates arriving every 10 minutes.
 ---
 # Design
 #### The size of the URL list can grow indefinitly
-I picked up [rqlite](https://github.com/rqlite/rqlite) and put it to work. The leader container is in charge of importing new rows in to the dataset using rqlite API. Worker containers subscribe to updates but dont take part in the raft keeping the write latency down. Worker containers can read the dataset from disk (-on-disk) using SQLite.
+I picked up [rqlite](https://github.com/rqlite/rqlite) and put it to work. The leader container is in charge of importing new rows in to the dataset using rqlite API. Worker containers subscribe to updates, but they do not take part in the raft. This keeps the write latency low. Worker containers can read the dataset directly from disk (rqlite flag -on-disk) using SQLite.
 #### The number of requests may exceed the capacity of this VM
-Each worker container seems to be able to do 16k req/s on the test machine. We can activate as many (N) worker containers as we need to service the requests. We can load balance the workers behind a proxy until we reach the proxy's req/s ceiling. Then we can scale out to M leader containers each with N number of workers
+Each worker container seems to be able to do 16k req/s on the test machine. We can activate as many (N) worker containers as we need to service the requests. We can load balance the workers behind a proxy until we reach the proxy's req/s ceiling. Then we can scale out to M leader containers and proxy containers, each with N number of worker containers
 #### What are some strategies you might use to update the service with new URLs?
 The rqlite API provides everything we need to accomplish this, including updating the worker containers as new data comes in. We can insert 5000 new rows in about 0.8s on the test machine.
