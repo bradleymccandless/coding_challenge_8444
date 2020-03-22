@@ -6,16 +6,21 @@ import (
 	"database/sql"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
-	_ "github.com/mattn/go-sqlite3"
+    _ "github.com/mattn/go-sqlite3"
 )
+
+var db *sql.DB
+var err error
+
+func InitDB(dataSourceName string) {
+    db, err = sql.Open("sqlite3", dataSourceName)
+    if err != nil {
+        log.Panic(err)
+    }
+}
 
 func UrlInfo(ctx *fasthttp.RequestCtx) {
 	ctx.SetContentType("application/json")
-	db, err := sql.Open("sqlite3", "~/rqlited/db.sqlite")
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer db.Close()
 	sqlStatement := `select * from urls where url = $url`
 	var url string
 	var threat string
@@ -37,7 +42,9 @@ func UrlInfo(ctx *fasthttp.RequestCtx) {
 		panic(err)
 	}
 }
+
 func main() {
+	InitDB("~/rqlited/db.sqlite?cache=shared&mode=r")
 	r := router.New()
 	r.GET("/urlinfo/1/*url", UrlInfo)
 	log.Fatal(fasthttp.ListenAndServe(":8080", r.Handler))

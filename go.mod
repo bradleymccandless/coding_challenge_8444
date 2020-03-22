@@ -1,4 +1,4 @@
-module gtihub.com/bradleymccandless/coding_challenge_8444
+module github.com/bradleymccandless/coding_challenge_8444
 
 go 1.14
 
