@@ -126,7 +126,7 @@ func importUrls(urlHausCsv string) {
 }
 func main() {
 	resp := rqliteApi([]byte("[\"PRAGMA journal_mode=WAL\"]"), "execute")
-    if fastjson.GetString(resp, "results") != "" {
+	if fastjson.GetString(resp, "results") != "" {
         log.Fatal(fastjson.GetString(resp, "results"))
     }
 	resp = rqliteApi([]byte(`["drop table urls;"]`), "execute")
